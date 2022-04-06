@@ -1,0 +1,4 @@
+const log = function(){
+    console.log("Welcome to my application . I am Sudhanshu Sahu and a part of functionUp Uranium cohort")
+} 
+module.exports.logging = log
