@@ -7,6 +7,7 @@ const lodash = require('lodash');
 
 
 router.get('/test-me', function (req, res) {
+    console.log(req.query.color);
     logger.logging()
     res.send('My first ever api !')
     helper.date() 
