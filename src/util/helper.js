@@ -6,8 +6,9 @@
 // module.exports.month = month
 // module.exports.batch = batchInfo
 let printDate = function() {
-    let date = new Date();
-    console.log(date.toDateString())
+    // let date = new Date();
+    console.log(new Date())
+    // console.log(date.toDateString())
 }
 let printMonth = function() {
     let month = new Date();
