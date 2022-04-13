@@ -1,58 +1,56 @@
 const bookModel = require("../models/bookModel")
-//Ist api
-const createUser = async function (req, res) {
+const authorModel = require("../models/authorModel")
+
+const createBookApi = async function (req, res) {
     let data = req.body
     let saveData = await bookModel.create(data)
     res.send({ msg: saveData })
 }
 
-
-// const getUserData = async function (req, res) {
-//     let allUser = await bookModel.find()
-//     res.send({ msg: allUser })
-//}
-
-//2nd api
-const getList = async function(req,res){
-    let allBooks = await bookModel.find().select({bookName:1 , authorName:1 , _id:0})
-    res.send({msg : allBooks})
+const createAuthorApi = async function (req, res) {
+    let data = req.body
+    let saveAuthor = await authorModel.create(data)
+    res.send({ msg: saveAuthor })
 }
 
-//5th api
-const getPrice = async function(req,res){
-    let price = await bookModel.find({
-        $or : [ { 'price.indian' :"100INR"},{'price.indian' : "200INR"},{'price.indian':"500INR"}]
-    })
-    res.send({msg : price})
-}
-//6th api
-const getBooks = async function(req,res){
-    let price = await bookModel.find({
-        $or : [ { stockAvailable :true},{totalPages :{$gt : "500"} }]
-    })
-    res.send({msg : price})
+//api2 
+const getBook = async function (req, res) {
+    let findAuth = await authorModel.find({ author_name: "Chetan Bhagat" })
+    let id = findAuth[0].author_id
+    let getBookList = await bookModel.find({ author_id: id }).select({ bookName: 1 })
+
+    res.send({ msg: getBookList })
 }
 
+//api 3
+const findAuthor = async function (req, res) {
+    let findAuth = await bookModel.findOneAndUpdate(
+        { bookName: "Two States" },
+        { $set: { price: 100 } },
+        { new: true }
+    )
+    // console.log(findAuth);
+    let getAuthorDetail = findAuth.author_id
+    let getPrice = await bookModel.findOne({ author_id: getAuthorDetail }).select({ price: 1, _id: 0 })
+    let updateList = await authorModel.findOne({ author_id: getAuthorDetail }).select({ author_name: 1, _id: 0 })
+    res.send({ msg: [updateList, getPrice] })
+}
+//api4
+const bookCost = async function (req, res) {
+let cost = await bookModel.find({price : {$gte : 50 , $lte : 100}}).select({author_id:1 , _id : 0})
 
-//3rd api
-const getBooksYear = async function (req, res) {
-    let Data = req.body.year
-    
-     let bkYear = await bookModel.find({year : Data} )
-     res.send({ msg: bkYear })
+let getAuthorNames = []
+for(let i = 0 ; i < cost.length ; i++){
+    const getAuthorId = cost[i].author_id
+    getAuthorNames = await authorModel.find({ author_id : getAuthorId}).select({author_name:1 , _id : 0})
+}
+res.send({data : getAuthorNames})
+
 }
 
-//4rth api
-const particularBooks =async function (req, res) {
-let obj = req.body;
-let random = await bookModel.find(obj)
-res.send({msg : random})
-}
+module.exports.findAuthor = findAuthor
+module.exports.getBook = getBook
+module.exports.createBookApi = createBookApi
 
-module.exports.createUser = createUser
-//module.exports.getUserData = getUserData
-module.exports.getList = getList
-module.exports.getPrice = getPrice
-module.exports.getBooks = getBooks
-module.exports.getBooksYear = getBooksYear
-module.exports.particularBooks = particularBooks
+module.exports.createAuthorApi = createAuthorApi
+module.exports.bookCost = bookCost

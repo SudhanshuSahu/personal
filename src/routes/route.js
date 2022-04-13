@@ -3,18 +3,19 @@ const express = require('express');
 const router = express.Router();
 const bookController = require('../controller/bookController')
 const bookModel = require('../models/bookModel')
+const authorModel =require('../models/authorModel')
 
 router.get('/test-me', function (req, res) {
     res.send('My first ever api!')
 });
 
-router.post('/createUserData' , bookController.createUser);
-//router.get('/getAllData' , bookController.getUserData);
-router.get('/bookList' , bookController.getList);
-router.get('/getXINRBooks' , bookController.getPrice);
-router.get('/getRandomBooks' , bookController.getBooks);
-router.post('/getBooksInYear' , bookController.getBooksYear);
-router.post('/getParticularBooks' , bookController.particularBooks);
+router.post('/createBook' , bookController.createBookApi);
+router.post('/createAuthor' , bookController.createAuthorApi);
+router.get('/getBook' , bookController.getBook);
+ router.get('/findAuthor' , bookController.findAuthor);
+router.get('/bookWithCost' , bookController.bookCost);
+// router.get('/getRandomBooks' , bookController.getBooks);
+// router.post('/getBooksInYear' , bookController.getBooksYear);
 
 
 
