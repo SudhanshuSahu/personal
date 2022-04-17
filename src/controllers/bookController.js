@@ -45,7 +45,7 @@ const fetchBooks = async function (req, res) {
 //5th (a) question
 const bookUpdate = async function(req,res){
     const update1 = await bookModel.updateMany({
-        publisher : {$in : ["625868e0b1e6eef39f861321","625868f6b1e6eef39f861323"]}},
+        publisher : {$in : ["625868e0b1e6eef39f861321","6258692ab1e6eef39f861327"]}},
         {$set : {isHardCover : true}},
         {new:true}
     )
@@ -59,7 +59,7 @@ const priceUpdate = async function(req , res){
         for(let i = 0 ; i<findAuthor.length ; ++i ) {
             update2[i] = await bookModel.updateMany(
                 {author :findAuthor[i]._id },
-                {$set : {price:10}}
+                {$inc : {price:10}}
                 )
         }
 res.send({msg:update2})
