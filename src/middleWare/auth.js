@@ -15,7 +15,7 @@ const authentication = async function (req, res, next) {
 
         }
         catch (err) {
-            return res.status(403).send({ status: false, message: "invalid token" })
+            return res.status(400).send({ status: false, message: "invalid token" })
         }
         req['x-api-key'] = token
         next()
@@ -27,19 +27,21 @@ const authentication = async function (req, res, next) {
 
 //Creating authorization function
 const authorization = async function (req, res, next) {
-    let data, bookId
+    try{
+    let data=req.body.userId
+    let bookId = req.params.bookId
     let token = req['x-api-key']
     let decodedToken = jwt.verify(token, "group34")
-    if (data = req.body.userId) {
+    if (data) {
         if (decodedToken.userId !== data) {
             return res.status(401).send({ status: false, message: "You are not an authorized user" })
         }
     }
 
-    if ((bookId = req.params.bookId)) {
+    if ((bookId)) {
         let book = await bookModel.findOne({ _id: bookId })
         if (book == null) {
-            return res.status(400).send({ status: false, message: "Book Id not exist" })
+            return res.status(404).send({ status: false, message: "Book Id not found" })
         }
         if (decodedToken.userId !== book.userId.toString()) {
             return res.status(401).send({ status: false, message: "You are not an authorized user" })
@@ -47,6 +49,10 @@ const authorization = async function (req, res, next) {
     }
 
     next()
+}
+catch(err){
+    res.status(500).send(err.message )
+}
 }
 
 

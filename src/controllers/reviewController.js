@@ -23,7 +23,7 @@ const createReview = async function (req, res) {
         //finding the document in book collection which is not deleted(isDeleted:false) by using bookId
         let checkBook = await bookModel.findOne({ _id: bookId, isDeleted: false })
         if (!checkBook) {
-            return res.status(400).send({ status: false, mesaage: "document of a book not found" })
+            return res.status(404).send({ status: false, mesaage: "document of a book not found" })
         }
 
 

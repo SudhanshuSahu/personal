@@ -1,7 +1,7 @@
 const bookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const reviewModel = require("../models/reviewModel")
-const res = require("express/lib/response")
+//const res = require("express/lib/response")
 
 
 const createBook = async function (req, res) {
@@ -193,7 +193,7 @@ const updateBook = async function (req, res) {
             { new: true }
         )
         if (!updateData) {
-            return res.status(400).send({ status: false, message: "BookId Not found" })
+            return res.status(404).send({ status: false, message: "BookId Not found" })
         }
         return res.status(200).send({ status: true, message: "Updated Successfully", data: updateData })
     }
@@ -212,7 +212,7 @@ const deleteData = async function (req, res) {
         //check if the document is found with that book id and check if it already deleted or not
         let verification = await bookModel.findById(id)
         if (!verification) {
-            return res.status(400).send({ Status: false, msg: "Document Not Found" })
+            return res.status(404).send({ Status: false, msg: "Document Not Found" })
         }
         if (verification.isDeleted === true) {
             return res.status(400).send({ Status: false, msg: "Document already deleted" })
