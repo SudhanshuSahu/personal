@@ -1,12 +1,55 @@
 const bookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const reviewModel = require("../models/reviewModel")
-//const res = require("express/lib/response")
+const aws = require("aws-sdk")
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRUJ6WPO6J",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+let uploadFile= async ( file) =>{
+   return new Promise( function(resolve, reject) {
+    // this function will upload file to aws and return the link
+    let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws
+
+    var uploadParams= {
+        ACL: "public-read",
+        Bucket: "classroom-training-bucket",  //HERE
+        Key: "abc/" + file.originalname, //HERE 
+        Body: file.buffer
+    }
+
+
+    s3.upload( uploadParams, function (err, data ){
+        if(err) {
+            return reject({"error": err})
+        }
+        console.log(data)
+        console.log("file uploaded succesfully")
+        return resolve(data.Location)
+    })
+
+   })
+}
+
+
+
 
 
 const createBook = async function (req, res) {
-    try {
+    //try {
         let data = req.body
+        let files = req.files
+        if (files && files.length > 0) {
+        let uploadedFileURL = await uploadFile(files[0]); 
+        //res.status(201).send({ status: true,msg: "file uploaded succesfully", data: uploadedFileURL });
+        data.bookCover = uploadedFileURL
+        }
+        else{
+            return res.status(404).send({msg:"No file Found"})  
+        }
 
         //Check if Body is empty or not
         if (Object.keys(data).length === 0) {
@@ -81,16 +124,18 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "ISBN is already present" })
         }
 
+        //creating the files in aws 
+        
         // creating the documents of book collection
         let books = await bookModel.create(data)
 
         res.status(201).send({ status: true, message: "success", data: books })
-
-
-    }
-    catch (err) {
-        res.status(500).send({ Status: false, msg: "Error", error: err.message })
-    }
+        //}
+       
+    
+    // catch (err) {
+    //     res.status(500).send({ Status: false, msg: "Error", error: err.message })
+    // }
 }
 
 //**********creating a function to fetch the Book documents by giving (some data) in query params*********//
